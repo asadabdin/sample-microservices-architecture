@@ -1,0 +1,23 @@
+---
+info:
+  component: One Swagger ui for all MicroService
+
+spring:
+  profiles: default
+
+server:
+  port: 8014
+
+documentation:
+  baseurl: http://localhost
+  swagger:
+    services:
+      - name: Loan Application Service
+        url: ${documentation.baseurl}:8081/v2/api-docs?group=All
+        version: 2.0
+      - name: Customer Service
+        url: ${documentation.baseurl}:8082/v2/api-docs?group=All
+        version: 2.0
+      - name: Auth
+        url: ${documentation.baseurl}:9180/v2/api-docs?group=All
+        version: 2.0

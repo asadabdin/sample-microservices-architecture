@@ -1,0 +1,50 @@
+server:
+  port: ${PORT:9080}
+application:
+  name: ^project.artifactId^
+  description: ^project.name^
+  version: ^project.version^
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_URL:http://${DISCOVERY_HOST:localhost}:${DISCOVERY_PORT:8761}/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes: # these are samples
+        - id: auth
+          uri: lb://192.168.1.9:9180
+          predicates:
+            - Path=/users/**,/api/users/{id}
+            - Method=GET,POST
+          filters:
+            - RewritePath=/service/(?<path>.*), /$\{path}
+        - id: customer-service
+          uri: lb://192.168.1.9:8082
+          predicates:
+            - Path=/api/customers/**
+            - Method=GET,POST
+          filters:
+            - RewritePath=/service/(?<path>.*), /$\{path}
+        - id: loan-application-service
+          uri: lb://192.168.1.9:8081
+          predicates:
+            - Path=/api/loanapplications/**
+            - Method=GET,POST
+          filters:
+            - RewritePath=/service/(?<path>.*), /$\{path}
